@@ -30,7 +30,9 @@ DATA_COLUMN = 8;
 % fclose(fid);
 
 for i = 1:MAX_LETTERS
-    pic = reconstructImage(uint8(trainMeans(i, :)), DATA_COLUMN, DATA_ROW, 1)';
+    mat = trainMeans(i, :);
+    mat = uint8(mat./max(max(mat)).*255);
+    pic = reconstructImage(mat, DATA_COLUMN, DATA_ROW, 1)';
     imshow(pic, 'InitialMagnification','fit');
     k = waitforbuttonpress;
 end

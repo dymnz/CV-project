@@ -5,7 +5,7 @@ for i = 1 : MAX_CLASS
     trainDiagCov = diag(diag(squeeze(trainCovs(i, :, :))));
     for m = 1 : size(testSetData, 1)  
             test = squeeze(testSetData(m, :, :));
-            logLikelihood = lognpdf(test, trainMean, trainDiagCov);            
+            logLikelihood = logmvnpdf(test, trainMean, trainDiagCov);            
             testSetPosterior(m, :, i) = bsxfun(@plus, logLikelihood, trainLogPrior);
     end
 end
@@ -18,7 +18,7 @@ for m = 1 : size(testSetData, 1)
         if index == m
             correct = correct + 1;            
         else
-            wrong = wrong + 1;            
+            wrong = wrong + 1;        
         end
     end
 end
