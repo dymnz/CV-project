@@ -10,6 +10,7 @@ MAX_TRAIN_SIZE = 100;   % Train set size
 MAX_TEST_SIZE = 20;     % Test set size
 DATA_ROW = 16;          % Data dimension Row
 DATA_COLUMN = 8;        % Data dimension Column
+DATA_SIZE = DATA_ROW * DATA_COLUMN;   % Data dimension
 cvLabelForTrain = [1, 2, 3, 4, 5, 6, 7];   % cvLabel for training
 cvLabelForTest = [8, 9, 0];                % cvLabel for testing
 

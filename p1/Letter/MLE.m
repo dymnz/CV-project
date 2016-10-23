@@ -1,3 +1,9 @@
+% This is the Maximum Likelihood Estimator
+% Remeber to run 'Init_Read' beforehand
+
+% I use log posterior, because my Covariance Matrix has a high-dimension,
+% and that makes the likelihood overflow/underflow
+
 %% Set the priors
 % Since we do not have prior knowledge of the data, the prior are uniform
 trainPriors = ones(MAX_CLASS, 1)./MAX_CLASS;
