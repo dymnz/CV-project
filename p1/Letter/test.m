@@ -29,19 +29,42 @@ DATA_COLUMN = 8;
 % 
 % fclose(fid);
 
-for i = 1:MAX_LETTERS
-    mat = trainMeans(i, :);
-    mat = uint8(mat./max(max(mat)).*255);
-    pic = reconstructImage(mat, DATA_COLUMN, DATA_ROW, 1)';
-    imshow(pic, 'InitialMagnification','fit');
-    k = waitforbuttonpress;
-end
+% for i = 1:MAX_LETTERS
+%     mat = trainMeans(i, :);
+%     mat = uint8(mat./max(max(mat)).*255);
+%     pic = reconstructImage(mat, DATA_COLUMN, DATA_ROW, 1)';
+%     imshow(pic, 'InitialMagnification','fit');
+%     k = waitforbuttonpress;
+% end
 
 % for i = 1:MAX_LETTERS
-%     mat = diag(squeeze(tsCovs(i, :, :))).';
+%     mat = trainMeans(i, :);
+%     mat = uint8(mat./max(max(mat)).*255);
+%     pic = reconstructImage(mat, DATA_COLUMN, DATA_ROW, 1)';
+%     imshow(pic, 'InitialMagnification','fit');
+%     k = waitforbuttonpress;
+% end
+
+for m = 1 : size(testSetData, 1)
+    for n = 1 : size(testSetData, 2)
+        mat = testSetData(m, n, :);
+        mat = uint8(mat./max(max(mat)).*255);
+        pic = reconstructImage(mat, DATA_COLUMN, DATA_ROW, 1)';
+        imshow(pic, 'InitialMagnification','fit');       
+        k = waitforbuttonpress; 
+    end
+end
+
+
+
+% for i = 1:MAX_LETTERS
+%     mat = diag(squeeze(trainCovs(i, :, :))).';
 %     mat = uint8(mat./max(max(mat)).*255);
 %     pic = reconstructImage(uint8(mat), DATA_COLUMN, DATA_ROW, 1)';
 %     imshow(pic, 'InitialMagnification','fit');
 %     k = waitforbuttonpress;
 % end
+% 
+
+
 

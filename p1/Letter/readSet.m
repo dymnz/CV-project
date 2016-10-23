@@ -16,6 +16,7 @@ while totalCount < MAX_SIZE*MAX_CLASS
     
     % Check if EOL
     if class == -1
+        error('Not enough data');
         break;
     end
     

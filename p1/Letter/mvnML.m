@@ -23,7 +23,7 @@ sCov = (dataSetSubMean.' * dataSetSubMean);
 % end
 
 if setSize > 1
-    sCov = sCov ./ (setSize-1) ./ 1000;
+    sCov = sCov ./ (setSize-1);
 end
 
 end
