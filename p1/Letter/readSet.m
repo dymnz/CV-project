@@ -37,8 +37,9 @@ end
 
 function [class, cvLabel, data] = readOneLine(fid)
 % Read one line/sample from file
-    ScaleData = 100;
-    ScaleNoise = 1;
+% This function adds 1% noise to every sample
+    ScaleData = 1;
+    ScaleNoise = 0.01;
     tline = fgets(fid);
     if tline == -1
         class = -1;
