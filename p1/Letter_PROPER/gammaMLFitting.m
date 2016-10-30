@@ -13,7 +13,7 @@ end
 
 function [sK, sTheta] = gammaML(dataSet)
 % Get K and Theta of Gamma Distribution
-
+% Just read the report
 sK = zeros(1, size(dataSet, 2));
 sTheta = zeros(1, size(dataSet, 2));
 for i = 1 : size(dataSet, 2)

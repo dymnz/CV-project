@@ -29,8 +29,7 @@ end
 end
 
 function data = readOneLine(fid, Noise)
-% Read one line/sample from file
-% adds +-0.3 noise to every sample (randn has a variance of 1)    
+% Read one line/sample from file  
     tline = fgets(fid);
     if tline == -1
         data = -1;

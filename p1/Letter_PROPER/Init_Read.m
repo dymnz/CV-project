@@ -1,17 +1,16 @@
 % Set global constants and read training/testing data set%%
 % The samples are in 16x8 binary image
-% A Gaussian noise with var=0.1 is added
 
 clear; close all;
 rng(0,'twister');
 
 % Global constants
 MAX_CLASS = 26;         % # of classes
-MAX_TRAIN_SIZE = 100;   % Train set size
-MAX_TEST_SIZE = 80;     % Test set size
+MAX_TEST_SIZE = 20;     % Test set size
 DATA_ROW = 16;          % Data dimension Row
 DATA_COLUMN = 8;        % Data dimension Column
 DATA_SIZE = DATA_ROW * DATA_COLUMN;   % Data dimension
+NoiseMagnitude = 0.01;  % The var. of noise to add when reading samples
 
 % Let half of the data be the training set
 % The dataset is not uniform, this is the best I can do
@@ -19,7 +18,7 @@ TotalSampleCount = [4034 1284 2114 1442 4955 921 2472 861 4913 189 909 3140 1602
 TrainCount = round(TotalSampleCount./2);
 TestCount = TotalSampleCount - TrainCount;
 
-TestCount = min(200*ones(size(TotalSampleCount)), TestCount);
+TestCount = min(MAX_TEST_SIZE*ones(size(TotalSampleCount)), TestCount);
 
 
 % Storage
@@ -27,7 +26,7 @@ TrainSet = cell(1, 1);
 TestSet = cell(1, 1);
 
 % Read the dataset
-[TrainSet, TestSet] = readSets(MAX_CLASS, TrainCount, TestCount, DATA_SIZE, 0.01);
+[TrainSet, TestSet] = readSets(MAX_CLASS, TrainCount, TestCount, DATA_SIZE, NoiseMagnitude);
 
-% Now, run "GaussianMLE.m" or other estimator
+% Now, run "GaussianMLE.m" or "GammaMLE.m"
 
