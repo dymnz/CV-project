@@ -1,11 +1,36 @@
+% close all;
+% VD = zeros(size(Ks, 2));
+% MD = zeros(size(Ks, 2));
+% for i = 1 : size(Ks, 2)
+%         varD = sum( abs(Ks{i}.*(Thetas{i}.^2) - diag(Covs{i}).') )/DATA_SIZE;
+%         meanD = sum( abs(Ks{i}.*(Thetas{i}) - Means{i}) )/DATA_SIZE;
+%         
+%         VD(i) = varD;
+%         MD(i) = meanD;
+% end
+
+% h1 = semilogy(VD, 'b');
+% hold on;
+% h2 = semilogy(MD, 'r');
+% xlabel('classes');
+% ylabel('|Diff|');
+
 % Set global constants and read training/testing data set%%
 % The samples are in 16x8 binary image
 % A Gaussian noise with var=0.1 is added
 
-clear; close all;
+
+RND = 0;
+GaussV = zeros(size(logspace(-3, -0.5), 2), DATA_SIZE);
+GammaV = zeros(size(logspace(-3, -0.5), 2), DATA_SIZE);
+
+for Noise = logspace(-3, -0.5)
+RND = RND + 1;    
+disp(Noise);
 rng(0,'twister');
 
 % Global constants
+
 MAX_CLASS = 26;         % # of classes
 MAX_TRAIN_SIZE = 100;   % Train set size
 MAX_TEST_SIZE = 80;     % Test set size
@@ -27,7 +52,17 @@ TrainSet = cell(1, 1);
 TestSet = cell(1, 1);
 
 % Read the dataset
-[TrainSet, TestSet] = readSets(MAX_CLASS, TrainCount, TestCount, DATA_SIZE, 0.01);
+[TrainSet, TestSet] = readSets(MAX_CLASS, TrainCount, TestCount, DATA_SIZE, Noise);
 
 % Now, run "GaussianMLE.m" or other estimator
+% Guassian Distribution Maximum Likelihood Estimation
+
+% Maxmimum Likelihood fitting
+[Means, Covs] = gaussianMLFitting(TrainSet);
+[Ks, Thetas] = gammaMLFitting(TrainSet);
+
+GaussV(RND, :) = abs(diag(Covs{i}).');
+GammaV(RND, :) = abs(Ks{i}.*(Thetas{i}.^2));
+
+end
 

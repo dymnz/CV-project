@@ -1,4 +1,4 @@
-function [TrainSet, TestSet] = readSets(MAX_CLASS, TrainCount, TestCount, DATA_SIZE)
+function [TrainSet, TestSet] = readSets(MAX_CLASS, TrainCount, TestCount, DATA_SIZE, Noise)
 % Read the data for all classes
 for i = 1 : MAX_CLASS
     fileName = sprintf('./data/%c.data', i - 1 + 'a');
@@ -10,7 +10,7 @@ for i = 1 : MAX_CLASS
         
         R = R + 1;
         % Read a sample
-        tempData = readOneLine(fid);
+        tempData = readOneLine(fid, Noise);
         if tempData == -1
             break;
         end
@@ -28,7 +28,7 @@ for i = 1 : MAX_CLASS
 end
 end
 
-function data = readOneLine(fid)
+function data = readOneLine(fid, Noise)
 % Read one line/sample from file
 % adds +-0.3 noise to every sample (randn has a variance of 1)    
     tline = fgets(fid);
@@ -39,7 +39,7 @@ function data = readOneLine(fid)
     tline = regexprep(tline, ' ', '');
     data = tline - '0';
     data = data(1:end-1);
-    data = data + 0.01*randn(size(data));
+    data = data + Noise*randn(size(data));
     data(data>1) = 1;
-    data(data<=0) = 0.0001;
+    data(data<=0) = 0.001;
 end

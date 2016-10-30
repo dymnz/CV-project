@@ -15,8 +15,7 @@ for i = 1 : MAX_CLASS
     SampleLikelihoods = zeros(size(TestSet{i}, 1), MAX_CLASS);
     for r = 1 : size(TestSet{i}, 1)
         for p = 1 : MAX_CLASS
-            SampleLikelihoods(r, p) = prod(gampdf(TestSet{i}(r, :), Ks{p}, Thetas{p}));
-            
+            SampleLikelihoods(r, p) = prod(gampdf(TestSet{i}(r, :), Ks{p}, Thetas{p}));            
         end
     end
     Likelihoods{i} = SampleLikelihoods;
