@@ -1,8 +1,14 @@
 function [Ks, Thetas] = gammaMLFitting(TrainSet)
-% Maximum Likelihood Multivariate Normal Distribution Fitting
+% GAMMAMLFITTING Calculate the Gamma Distribution parameter of a given training set
+% INPT: TrainSet: LxNxD matrix. A training set of L classes, N samples and D dimension.
+% OUPT: Ks: 1xL cell array. Each cell contains the K of a class.
+%		Thetas: 1xL cell raary. Each cell contains the Theta of a class.
+% Please refer to the report
+
 Ks = cell(1, 1);
 Thetas = cell(1, 1);
 
+% Calculate the Gamma Distribution parameter of each training sample 
 for i = 1 : length(TrainSet)
     [SampleK, SampleCov] = gammaML(TrainSet{i});
     Ks{i} = SampleK;
@@ -12,8 +18,8 @@ end
 end
 
 function [sK, sTheta] = gammaML(dataSet)
-% Get K and Theta of Gamma Distribution
-% Just read the report
+% GAMMAML Get K and Theta of Gamma Distribution
+% Please refer to the report
 sK = zeros(1, size(dataSet, 2));
 sTheta = zeros(1, size(dataSet, 2));
 for i = 1 : size(dataSet, 2)

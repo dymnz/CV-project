@@ -1,5 +1,9 @@
 function [Means, Covs] = gaussianMLFitting(TrainSet)
-% Maximum Likelihood Multivariate Normal Distribution Fitting
+% GAUSSIANMLFITTING Maximum Likelihood Multivariate Normal Distribution Fitting
+% INPT: TrainSet: LxNxD matrix. A training set of L classes, N samples and D dimension.
+% OUPT: Means: 1xL cell array. Each cell contains the Mean of a class.
+%		Covs: 1xL cell raary. Each cell contains the Covariance matrix of a class.
+
 Means = cell(1, 1);
 Covs = cell(1, 1);
 
@@ -12,7 +16,7 @@ end
 end
 
 function [sMean, sCov] = mvnML(dataSet)
-% Get Mean and Cov of Multivariate Normal Dist
+% MVNML Get Mean and Cov of Multivariate Normal Dist of a dataset
 
 setSize = size(dataSet, 1);
 

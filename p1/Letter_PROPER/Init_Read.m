@@ -1,5 +1,5 @@
-% Set global constants and read training/testing data set%%
-% The samples are in 16x8 binary image
+% This is the bootstrap script for the entire project,
+% run this before anything else.
 
 clear; close all;
 rng(0,'twister');
@@ -18,8 +18,8 @@ TotalSampleCount = [4034 1284 2114 1442 4955 921 2472 861 4913 189 909 3140 1602
 TrainCount = round(TotalSampleCount./2);
 TestCount = TotalSampleCount - TrainCount;
 
+% Limit the test set size to min(MAX_TEST_SIZE, Amount of samples left)
 TestCount = min(MAX_TEST_SIZE*ones(size(TotalSampleCount)), TestCount);
-
 
 % Storage
 TrainSet = cell(1, 1);
