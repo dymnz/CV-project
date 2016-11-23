@@ -1,4 +1,14 @@
 function [L, g] = gradientDescent(x, oldTheta)
+% Gradient Descent using algorithm 9.8
+% INPT: x: DxI matrix. The dataset with D dimensions and I samples
+%       oldTheta: DxK matrix. The model parameters with D dimensions of K classes
+% OUPT: L: scalar. The cost function of Softmax Regression calculated using oldTheta
+%       g: DxK matrix. The gradient of parameter matrix
+
+
+
+% TODO: Change cost calculation to batch
+%       Add weight decay
 
 L = 0;
 g = zeros(size(oldTheta));
