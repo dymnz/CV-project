@@ -1,10 +1,12 @@
-function Y = softmax(X, theta)
+function Y = softmax(X, Theta)
 % Softmax function
 % INPT: X: DxI matrix. The dataset with D dimensions and I samples
 % 		theta: DxK matrix. The model parameters with D dimensions of K classes
 % OUPT: Y: KxI matrix. The result of Softmax with K classes and I samples
 
-weight = exp(theta.' * X);
-Y = weight / sum(weight);
+K = size(Theta, 2);
+
+weight = exp(Theta.' * X);
+Y = weight ./ repmat(sum(weight), K, 1);
 
 end

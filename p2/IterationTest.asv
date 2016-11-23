@@ -1,7 +1,6 @@
 
-ITERATION_COUNTS = [0:1:99 100:100:1000];
-corretPTrain = zeros(size(ITERATION_COUNTS));
-corretPTest = zeros(size(ITERATION_COUNTS));
+ITERATION_COUNTS = [100:100:1500];
+corretP = zeros()
 
 for C = 1 : numel(ITERATION_COUNTS)
 
@@ -37,7 +36,7 @@ for i = 1 : K
         end
     end
 end
-corretPTrain(C) = (1-sum(errorCount)/sum(TrainCount)) * 100;
+
 disp( sprintf('Training correct %%: %.2f%%', (1-sum(errorCount)/sum(TrainCount)) * 100));
 
 %% Testing Set error
@@ -56,14 +55,8 @@ for i = 1 : K
         end
     end
 end
-corretPTest(C) = (1-sum(errorCount)/sum(TestCount)) * 100;
+
 disp( sprintf('Testing correct %%: %.2f%%', (1-sum(errorCount)/sum(TestCount)) * 100));
 
+
 end
-figure; 
-scatter(ITERATION_COUNTS, corretPTrain);
-hold on;
-scatter(ITERATION_COUNTS, corretPTest);
-axis([0, 1000, 0, 100]);
-legend('Train','Test');
-title('Classification rate vs. # of iterations');

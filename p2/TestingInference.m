@@ -8,11 +8,11 @@ for i = 1 : K
     for r = 1 : size(TestSet{i}, 1)
         xi = TestSet{i}(r, :).';
         yi = softmax(xi, theta);
-        [v ind] = max(yi);
+        [val ind] = max(yi);
         if ind ~= target
             errorCount(i) = errorCount(i) + 1;
         end
     end
 end
-
-disp( (1-sum(errorCount)/sum(TestCount)) * 100);
+disp(sprintf('TestSet correct: %.2f%%', ...
+    (1-sum(errorCount)/sum(TestCount)) * 100));
