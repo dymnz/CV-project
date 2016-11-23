@@ -48,6 +48,8 @@ Temporary Items
 *.data
 *.tmp
 *.zip
-p1/project1-0210814-王順興.pdf
 *.docx
 *.pdf
+*.rar
+*.mat
+*.asv
