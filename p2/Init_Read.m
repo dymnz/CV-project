@@ -10,7 +10,7 @@ MAX_TRAIN_SIZE = 200;   % Test set size
 MAX_TEST_SIZE = 50;     % Test set size
 DATA_ROW = 16;          % Data dimension Row
 DATA_COLUMN = 8;        % Data dimension Column
-DIMENSION = DATA_ROW * DATA_COLUMN;   % Data dimension
+DIMENSION = 1 + DATA_ROW * DATA_COLUMN;   % Data dimension. + a prepend 1
 NOISE_MAGNITUDE = 0;  % The var. of noise to add when reading samples
 
 % Let half of the data be the training set

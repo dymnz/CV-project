@@ -59,4 +59,5 @@ function data = readOneLine(fid, NOISE_MAGNITUDE)
 	% The bottom limit is due to the need of evaluate ln(x)
     data(data>1) = 1;		
     data(data<=0) = 0.001;
+    data = cat(2, [1], data);
 end

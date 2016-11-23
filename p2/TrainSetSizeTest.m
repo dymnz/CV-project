@@ -14,7 +14,7 @@ MAX_TRAIN_SIZE = TRAINSET_COUNTS(C);   % Test set size
 MAX_TEST_SIZE = 50;     % Test set size
 DATA_ROW = 16;          % Data dimension Row
 DATA_COLUMN = 8;        % Data dimension Column
-DIMENSION = DATA_ROW * DATA_COLUMN;   % Data dimension
+DIMENSION = 1 + DATA_ROW * DATA_COLUMN;   % Data dimension. + a prepend 1
 NOISE_MAGNITUDE = 0;  % The var. of noise to add when reading samples
 
 % Let half of the data be the training set
@@ -97,4 +97,4 @@ hold on;
 scatter(TRAINSET_COUNTS, corretPTest);
 axis([0, 200, 0, 100]);
 legend('Train','Test');
-title('Classification rate vs. # of training samples');
+title('Classification Rate vs. # of Training Samples');

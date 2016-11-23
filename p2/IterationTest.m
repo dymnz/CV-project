@@ -1,5 +1,5 @@
 
-ITERATION_COUNTS = [0:1:99 100:100:1000];
+ITERATION_COUNTS = [1:1:99 100:100:1000];
 corretPTrain = zeros(size(ITERATION_COUNTS));
 corretPTest = zeros(size(ITERATION_COUNTS));
 
@@ -66,4 +66,4 @@ hold on;
 scatter(ITERATION_COUNTS, corretPTest);
 axis([0, 1000, 0, 100]);
 legend('Train','Test');
-title('Classification rate vs. # of iterations');
+title('Classification Rate vs. # of Iterations');
