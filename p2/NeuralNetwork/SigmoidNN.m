@@ -1,0 +1,3 @@
+% Learning
+
+LAYER = 3;

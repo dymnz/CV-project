@@ -10,7 +10,7 @@ MAX_TRAIN_SIZE = 200;   % Test set size
 MAX_TEST_SIZE = 50;     % Test set size
 DATA_ROW = 16;          % Data dimension Row
 DATA_COLUMN = 8;        % Data dimension Column
-DIMENSION = DATA_ROW * DATA_COLUMN;   % Data dimension. + a prepend 1
+DIMENSION = 1 + DATA_ROW * DATA_COLUMN;   % Data dimension. + a prepend 1
 NOISE_MAGNITUDE = 0;  % The var. of noise to add when reading samples
 
 % Let half of the data be the training set
@@ -32,9 +32,4 @@ TestSet = cell(1, 1);
 % Read the dataset
 [TrainSet, TestSet] = readSets(MAX_CLASS, TrainCount, TestCount, DIMENSION, NOISE_MAGNITUDE);
 
-% Prepend 1 on each sample
-for i = 1 : MAX_CLASS
-    TrainSet{i} = cat(2, ones(size(TrainSet{i}, 1), 1), TrainSet{i});
-    TestSet{i} = cat(2, ones(size(TestSet{i}, 1), 1), TestSet{i});
-end
-    
+
