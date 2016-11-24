@@ -1,5 +1,5 @@
 
-ITERATION_COUNTS = [1:1:99 100:100:1000];
+ITERATION_COUNTS = round(logspace(3, 4, 10));
 corretPTrain = zeros(size(ITERATION_COUNTS));
 corretPTest = zeros(size(ITERATION_COUNTS));
 
@@ -64,6 +64,7 @@ figure;
 scatter(ITERATION_COUNTS, corretPTrain);
 hold on;
 scatter(ITERATION_COUNTS, corretPTest);
-axis([0, 1000, 0, 100]);
+axis([10, 10000, 0, 100]);
+set(gca,'xscale','log');
 legend('Train','Test');
 title('Classification Rate vs. # of Iterations');
