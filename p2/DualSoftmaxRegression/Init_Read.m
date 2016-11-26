@@ -37,6 +37,6 @@ for i = 1 : MAX_CLASS
     TrainSet{i} = cat(2, ones(size(TrainSet{i}, 1), 1), TrainSet{i});
     TestSet{i} = cat(2, ones(size(TestSet{i}, 1), 1), TestSet{i});
 end
+    
 TrainCount = sum(TrainCounts);
 TestCount = sum(TestCounts);
-    

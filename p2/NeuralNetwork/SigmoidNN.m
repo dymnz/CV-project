@@ -1,24 +1,24 @@
-% Learning
+% Sigmoid Neural Network with 1 hidden layer
 
-LEARNING_RATE = 1;
+LEARNING_RATE = 0.5;
 
-LAYER_COUNT = 3;
-NEURON_COUNTS = [DIMENSION round(DIMENSION/2) MAX_CLASS];
-PARAM_COUNTS = [0 NEURON_COUNTS(1:end-1)];
+LAYER_COUNT = 3;    % Input/Hidden/Output        
+NEURON_COUNTS = [DIMENSION round(DIMENSION/2) MAX_CLASS]; % # of neurons for each layer
+PARAM_COUNTS = [0 NEURON_COUNTS(1:end-1)];  % # of parameters for neurons in each layer
 
-bias = cell(1, LAYER_COUNT-1);
-weight = cell(1, LAYER_COUNT-1);
+bias = cell(1, LAYER_COUNT-1);      % bias of each neuron in each layer
+weight = cell(1, LAYER_COUNT-1);    % weight of each neuron in each layer
 
+% Randomly initialize weight and bias
 for i = 1 : LAYER_COUNT-1
-    weight{i} = 0.01 * randn(NEURON_COUNTS(i+1), PARAM_COUNTS(i+1));
-    bias{i} = 0.01 * randn(NEURON_COUNTS(i+1), 1);
+    weight{i} = unifrnd(-0.5, 0.5, NEURON_COUNTS(i+1), PARAM_COUNTS(i+1));
+    bias{i} = unifrnd(-0.5, 0.5, NEURON_COUNTS(i+1), 1);
 end
 
-activation = cell(1, LAYER_COUNT);
-delta = cell(1, LAYER_COUNT);
-batchGW = cell(1, LAYER_COUNT-1);
-batchGB = cell(1, LAYER_COUNT-1);
-
+activation = cell(1, LAYER_COUNT);  % Output of each layer
+delta = cell(1, LAYER_COUNT);       % Error of each layer
+batchGW = cell(1, LAYER_COUNT-1);   % Gradient of weight
+batchGB = cell(1, LAYER_COUNT-1);   % Gradient of bias
 
 for itr = 1 : 500
 
@@ -59,6 +59,7 @@ for i = 1 : MAX_CLASS
                 (activation{l}.*(1-activation{l})) ;
         end
         
+        % Update gradient
         for l = 1 : LAYER_COUNT - 1
             gW{l} = delta{l+1} * (activation{l}');
             gB{l} = delta{l+1};
@@ -70,12 +71,12 @@ for i = 1 : MAX_CLASS
 end
 
 for i = 1 : LAYER_COUNT-1
-    weight{i} = weight{i} - LEARNING_RATE .* (batchGW{i}./TrainCount);
-    bias{i} = bias{i} - LEARNING_RATE .* (batchGB{i}./TrainCount);
+    weight{i} = weight{i} - LEARNING_RATE * (batchGW{i}./TrainCount);
+    bias{i} = bias{i} - LEARNING_RATE * (batchGB{i}./TrainCount);
 end
 L = L/TrainCount;
 disp(L);
-%disp(sum(errorCount));
+disp(sum(errorCount));
 end
 
 
