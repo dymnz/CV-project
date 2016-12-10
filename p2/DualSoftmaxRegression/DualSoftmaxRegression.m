@@ -1,6 +1,6 @@
 % Dual Softmax Regression Learning
 
-MAX_ITERATION = 2000;	% Stop the iteration when this is reached
+MAX_ITERATION = 100;	% Stop the iteration when this is reached
 LEARNING_RATE = 0.002;	% Learning rate
 psi = cell(1, MAX_CLASS);   % 1xK Ix1	The psi for K class, each with I samples 
 
