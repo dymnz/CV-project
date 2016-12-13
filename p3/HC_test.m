@@ -1,15 +1,14 @@
 % Test of Harris Corner with Non-maximum Suppression
-clear; close all;
+% clear; close all;
 
-WindowSize = 5;
-MaxCornerCount = 100;
-% img = imread('./data/pattern.png');
-Img = imread('./data/s_top.jpg');
+WindowSize = 10;
+MaxCornerCount = 18;
+% Img = imread('./data/s_sample.jpg');
+Img = imread('./data/s1.jpg');
 [H W] = size(Img(:, :, 1));
-
+Img = imgaussfilt(Img, 5);
 corners = harrisCorner(Img, WindowSize, MaxCornerCount);
 
-cim = zeros(size(Img));
 for i = 1 : size(corners, 1)
     row = corners(i, 1); 
     col = corners(i, 2);
@@ -19,6 +18,6 @@ for i = 1 : size(corners, 1)
         end
     end  
 end
-imshow(Img);
+figure; imshow(Img);
 
 

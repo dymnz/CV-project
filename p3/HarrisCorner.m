@@ -3,9 +3,10 @@ function [corners] = harrisCorner(Img, WindowSize, MaxCornerCount)
 
 % Check if the image is grayscale image
 % if not, turn it into grayscale image
-grayimg = Img;
+grayimg = double(Img);
 if size(Img, 3) ~= 1
-    grayimg = double(rgb2gray(Img));
+%     grayimg = double(rgb2gray(Img));
+ grayimg = double(imbinarize(rgb2gray(Img)));
 end
 [H W] = size(grayimg);
 
@@ -37,8 +38,8 @@ for i = 1 : MaxCornerCount
     
     [row, col] = ind2sub(size(cim), ind);
     corners(i, :) = [row col];
-    for r = max(1, row - WindowSize) : min(row + WindowSize, H)
-        for c = max(1, col - WindowSize) : min(col + WindowSize, W)
+    for r = max(1, row - 2*WindowSize) : min(row + 2*WindowSize, H)
+        for c = max(1, col - 2*WindowSize) : min(col + 2*WindowSize, W)
             cim(r, c) = 0;
         end
     end    
