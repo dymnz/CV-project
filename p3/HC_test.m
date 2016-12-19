@@ -7,7 +7,7 @@ MaxCornerCount = 18;
 Img = imread('./data/s1.jpg');
 [H W] = size(Img(:, :, 1));
 Img = imgaussfilt(Img, 5);
-corners = harrisCorner(Img, WindowSize, MaxCornerCount);
+corners = HarrisCorner(Img, WindowSize, MaxCornerCount);
 
 for i = 1 : size(corners, 1)
     row = corners(i, 1); 
