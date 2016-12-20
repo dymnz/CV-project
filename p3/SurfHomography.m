@@ -1,5 +1,5 @@
 % Find the homography between two images with SURF and RANSAC
-% clear; close all;
+clear; close all;
 
 Img1 = rgb2gray(imread('./data/i2.jpg'));
 Img2 = rgb2gray(imread('./data/i2.jpg'));
@@ -10,9 +10,10 @@ points2 = detectSURFFeatures(Img2);
 % Find matched SURF feature points
 [T, W] = surfFindMatchPoints(Img1, Img2);
 
-% Append 1 for homogenous coordinate
+% Find homography
 NumOfMPs = size(W, 1);
-phi = findHomography(W, T, NumOfMPs);
+NumOfIterations = 300;
+phi = findHomography(W, T, NumOfMPs, NumOfIterations);
 
 %%
 exphi = double(reshape(phi, [3 3]));
