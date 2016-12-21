@@ -3,8 +3,8 @@
 % scaled with respect to each other. 
 %% 
 % Read the two images.
-Img1 = rgb2gray(imread('./data/i1.jpg'));
-Img2 = rgb2gray(imread('./data/i2.jpg'));
+Img1 = rgb2gray(imread('./data/b_sample.jpg'));
+Img2 = rgb2gray(imread('./data/b1.jpg'));
 
 Img1 = imresize(Img1, [480 640]);
 Img2 = imresize(Img2, [480 640]);

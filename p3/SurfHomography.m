@@ -3,8 +3,8 @@ clear; close all;
 
 %% Init images
 disp('Read images...');
-Img1 = rgb2gray(imread('./data/i1.jpg'));
-Img2 = rgb2gray(imread('./data/i2.jpg'));
+Img1 = rgb2gray(imread('./data/b_sample.jpg'));
+Img2 = rgb2gray(imread('./data/b2.jpg'));
 
 % Small = Fast
 Img1 = imresize(Img1, [480 640]);
@@ -23,7 +23,7 @@ disp('RANSAC...');
 % TODO: Find a better way to set RANSACiteration
 % TODO: Find a better InlierThreshold
 HomographyIterations = 300;
-RANSACiteration = max(1000, NumOfMPs*10);
+RANSACiteration = max(500, NumOfMPs*10);
 InlierThreshold = 5;
 
 maxInliers = zeros(1,1);
@@ -60,9 +60,9 @@ if InlierCount > maxInlierCount
     maxInlierCount = InlierCount;
     disp(sprintf('Itr: %d InlierCount: %d', i, maxInlierCount));
     
-    if double(maxInlierCount)/NumOfMPs >= 0.9
-        break;
-    end
+%     if double(maxInlierCount)/NumOfMPs >= 0.5
+%         break;
+%     end
 end
 
 end
@@ -79,5 +79,27 @@ phi = findHomographyTest(WorldCoord, TargetCoord, maxInlierCount, HomographyIter
 exphi = double(reshape(phi, [3 3]));
 t = projective2d(exphi);
 img = imwarp(Img2, t);
-figure; imshow(img, 'InitialMagnification', 'fit');
-figure; imshow(Img1, 'InitialMagnification', 'fit');
+figure; imshow(img);
+% figure; imshow(Img1);
+
+
+
+%% Append Nemo
+t = projective2d(inv(exphi));
+figure1 = figure;
+ax1 = axes('Parent',figure1);
+ax2 = axes('Parent',figure1);
+set(ax1,'Visible','off');
+set(ax2,'Visible','off');
+
+% [a,map,alpha] = imread('./data/nemo.png');
+[a,map,alpha] = imread('./data/square.png');
+[a map] = imresize(a, [480 640]);
+alpha = imresize(alpha, [480 640]);
+a = imwarp(a, t);
+alpha = imwarp(alpha, t);
+I = imshow(a,'Parent',ax2);
+set(I,'AlphaData',alpha);
+imshow(Img2,'Parent',ax1);
+
+%% 
