@@ -4,7 +4,7 @@
 %% 
 % Read the two images.
 Img1 = rgb2gray(imread('./data/cover.jpg'));
-Img2 = rgb2gray(imread('./data/c1.jpg'));
+Img2 = rgb2gray(imread('./data/c2.jpg'));
 
 Img1 = imrotate(Img1, -90);
 Img1 = imresize(Img1, 0.5);
@@ -12,7 +12,7 @@ Img2 = imresize(Img2, 0.5);
 
 %%
 % Find the SURF features.
-points1 = detectSURFFeatues(Img1);
+points1 = detectSURFFeatures(Img1);
 points2 = detectSURFFeatures(Img2); 
 %% 
 % Extract the features.
@@ -24,7 +24,7 @@ indexPairs = matchFeatures(f1,f2) ;
 matchedPoints1 = vpts1(indexPairs(:,1));
 matchedPoints2 = vpts2(indexPairs(:,2));
 
-radius = 3;
+radius = 1;
 p1BadIndices = zeros(size(matchedPoints1));
 for i = 1 : size(matchedPoints1, 1)
     pts = matchedPoints1.Location(i, :);

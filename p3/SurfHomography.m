@@ -4,7 +4,7 @@ clear; close all;
 %% Init images
 disp('Read images...');
 Img1 = rgb2gray(imread('./data/cover.jpg'));
-Img2 = rgb2gray(imread('./data/a2.jpg'));
+Img2 = rgb2gray(imread('./data/c2.jpg'));
 
 % Small = Fast
 Img1 = imresize(Img1, 0.5);
@@ -23,7 +23,7 @@ disp('RANSAC...');
 % TODO: Find a better way to set RANSACiteration
 % TODO: Find a better InlierThreshold
 HomographyIterations = 300;
-RANSACiteration = min(max(100, NumOfMPs*10), 1000);
+RANSACiteration = min(max(500, NumOfMPs*10), 1000);
 InlierThreshold = 5;
 
 maxInliers = zeros(1,1);
@@ -60,7 +60,7 @@ if InlierCount > maxInlierCount
     maxInlierCount = InlierCount;
     disp(sprintf('Itr: %d InlierCount: %d', i, maxInlierCount));
     
-    if double(maxInlierCount)/NumOfMPs >= 0.5
+    if double(maxInlierCount)/NumOfMPs >= 0.8
         break;
     end
 end
@@ -115,3 +115,17 @@ set(I,'AlphaData',xalpha);
 imshow(img, 'Parent',ax1);
 
 %% 
+
+i2 = imresize(imread('./data/c2.jpg'), 0.5);
+imx = i2;
+radius = 3;
+for i = 1 : size(WorldCoord, 1)
+    pts = round(WorldCoord(i, :));
+    rx = pts(2); cx = pts(1);
+    for r = rx-radius : rx+radius
+        for c = cx-radius : cx+radius
+            imx(r, c, :) = [255 0 0];
+        end
+    end
+end
+figure;imshow(imx);
