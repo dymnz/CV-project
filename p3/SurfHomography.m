@@ -3,12 +3,12 @@ clear; close all;
 
 %% Init images
 disp('Read images...');
-Img1 = rgb2gray(imread('./data/b_sample.jpg'));
-Img2 = rgb2gray(imread('./data/b2.jpg'));
+Img1 = rgb2gray(imread('./data/cover.jpg'));
+Img2 = rgb2gray(imread('./data/a2.jpg'));
 
 % Small = Fast
-Img1 = imresize(Img1, [480 640]);
-Img2 = imresize(Img2, [480 640]);
+Img1 = imresize(Img1, 0.5);
+Img2 = imresize(Img2, 0.5);
 
 %% Find matched SURF feature points
 disp('Find SURF matching points...');
@@ -23,7 +23,7 @@ disp('RANSAC...');
 % TODO: Find a better way to set RANSACiteration
 % TODO: Find a better InlierThreshold
 HomographyIterations = 300;
-RANSACiteration = max(500, NumOfMPs*10);
+RANSACiteration = min(max(100, NumOfMPs*10), 1000);
 InlierThreshold = 5;
 
 maxInliers = zeros(1,1);
@@ -60,9 +60,9 @@ if InlierCount > maxInlierCount
     maxInlierCount = InlierCount;
     disp(sprintf('Itr: %d InlierCount: %d', i, maxInlierCount));
     
-%     if double(maxInlierCount)/NumOfMPs >= 0.5
-%         break;
-%     end
+    if double(maxInlierCount)/NumOfMPs >= 0.5
+        break;
+    end
 end
 
 end
@@ -78,28 +78,40 @@ phi = findHomographyTest(WorldCoord, TargetCoord, maxInlierCount, HomographyIter
 
 exphi = double(reshape(phi, [3 3]));
 t = projective2d(exphi);
-img = imwarp(Img2, t);
+img= imwarp(Img2,t);
 figure; imshow(img);
-% figure; imshow(Img1);
 
-
-
-%% Append Nemo
-t = projective2d(inv(exphi));
+%% Append Nemo2
 figure1 = figure;
 ax1 = axes('Parent',figure1);
 ax2 = axes('Parent',figure1);
 set(ax1,'Visible','off');
 set(ax2,'Visible','off');
-
 % [a,map,alpha] = imread('./data/nemo.png');
-[a,map,alpha] = imread('./data/square.png');
-[a map] = imresize(a, [480 640]);
-alpha = imresize(alpha, [480 640]);
-a = imwarp(a, t);
-alpha = imwarp(alpha, t);
-I = imshow(a,'Parent',ax2);
-set(I,'AlphaData',alpha);
-imshow(Img2,'Parent',ax1);
+[a,map,alpha] = imread('./data/s2.png');
+[a map] = imresize(a, 0.5);
+alpha = imresize(alpha, 0.5);
+
+img = Img2;
+
+RNe = imref2d(size(a));
+t = projective2d(inv(exphi));
+[a RNex] = imwarp(a, RNe, t);
+alpha = imwarp(alpha, RNe, t);
+
+xa = uint8(zeros([size(img) 3]));
+xa( floor(RNex.YWorldLimits(1)):floor(RNex.YWorldLimits(1)) + size(a, 1) - 1,...
+    floor(RNex.XWorldLimits(1)):floor(RNex.XWorldLimits(1)) + size(a, 2) - 1, :)...
+    = a;
+Rxa = imref2d(size(xa));
+
+xalpha = uint8(zeros(size(img)));
+xalpha( floor(RNex.YWorldLimits(1)):floor(RNex.YWorldLimits(1)) + size(a, 1) - 1,...
+    floor(RNex.XWorldLimits(1)):floor(RNex.XWorldLimits(1)) + size(a, 2) - 1)...
+    = alpha;
+
+I = imshow(xa, 'Parent',ax2);
+set(I,'AlphaData',xalpha);
+imshow(img, 'Parent',ax1);
 
 %% 
