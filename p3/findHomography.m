@@ -1,8 +1,11 @@
-function phi = findHomographyTest(W, T, NumOfMPs, NumOfIterations)
+function phi = findHomography(W, T, NumOfIterations)
+% Find Corresponding Points Using SURF Features 
+% INPT: W: Nx2 matrix. The [x y] coordinates of world FPs
+%       T: Nx2 matrix. The [x y] coordinates of target FPs
+%       NumOfIterations: The # of maximum iterations for non-linear optimization
+% OUPT: phi: 1x9 vector. The vectorized homography parameters
 
-if NumOfMPs > size(W, 1)
-    error('wow');
-end
+NumOfMPs = size(W, 1);
 
 % Append 1 for homogenous coordinate
 W = [W ones(NumOfMPs, 1)];
@@ -65,10 +68,11 @@ end
 dPhi = pinv(A)*b;
 phi = phi + dPhi;
 
-% AvgError = (sum(abs(psi(:, 1))) + sum(abs(psi(:, 2))))/2/size(psi, 1);
-% if AvgError == 0
-%     break;
-% end
+% Stop when the projection error is 0
+AvgError = (sum(abs(psi(:, 1))) + sum(abs(psi(:, 2))))/2/size(psi, 1);
+if AvgError == 0
+    break;
+end
 
 end
 phi = [phi(1:8);1];

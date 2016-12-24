@@ -4,7 +4,7 @@
 %% 
 % Read the two images.
 Img1 = rgb2gray(imread('./data/cover.jpg'));
-Img2 = rgb2gray(imread('./data/c2.jpg'));
+Img2 = rgb2gray(imread('./data/b2.jpg'));
 
 Img1 = imrotate(Img1, -90);
 Img1 = imresize(Img1, 0.5);
@@ -47,7 +47,8 @@ GoodIndices = ~(p1BadIndices | p2BadIndices);
 matchedPoints1 = matchedPoints1(GoodIndices);
 matchedPoints2 = matchedPoints2(GoodIndices);
 
+figure; showMatchedFeatures(Img1,Img2,matchedPoints1,matchedPoints2);
 %% 
 % Display the matching points. The data still includes several outliers, but  you can see the effects of rotation and scaling on the display of matched features.
-figure; showMatchedFeatures(Img1,Img2,matchedPoints1,matchedPoints2);
+% figure; showMatchedFeatures(Img1,Img2,matchedPoints1,matchedPoints2);
 legend('matched points 1','matched points 2');

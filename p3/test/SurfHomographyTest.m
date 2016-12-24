@@ -1,12 +1,11 @@
 %% Find the homography between two images with SURF and RANSAC
 clear; close all;
 
-%% Init images
+%% Read and resize the images
 disp('Read images...');
-Img1 = rgb2gray(imread('./data/bs2.jpg'));
-Img2 = rgb2gray(imread('./data/b1.jpg'));
+Img1 = rgb2gray(imread('./data/cover.jpg'));
+Img2 = rgb2gray(imread('./data/b2.jpg'));
 
-% Small = Fast
 Img1 = imresize(Img1, 0.5);
 Img2 = imresize(Img2, 0.5);
 
@@ -20,14 +19,13 @@ disp(sprintf('Num of MPs: %d', NumOfMPs));
 
 %% RANSAC
 disp('RANSAC...');
-% TODO: Find a better way to set RANSACiteration
-% TODO: Find a better InlierThreshold
-HomographyIterations = 300;
-RANSACiteration = max(500, NumOfMPs*10);
-InlierThreshold = 5;
+HomographyIterations = 300; % # of maximum iterations for non-linear optimization
+RANSACiteration = min(max(500, NumOfMPs*10), 1000); % # of maximum iterations for RANSAC
+InlierThreshold = 5;    % Thershold for projection error in pixels
 
-maxInliers = zeros(1,1);
-maxInlierCount = 0;
+maxInliers = zeros(1,1);    % Store the largest set of inliers
+maxInlierCount = -1;    % Track the 
+
 for i = 1 : RANSACiteration
 % Randomly pick four points
 Indices = randperm(NumOfMPs, 4);
@@ -35,7 +33,7 @@ WorldCoord = W(Indices, :);
 TargetCoord = T(Indices, :);
 
 % Find homography using the four points
-phi = findHomography(WorldCoord, TargetCoord, 4, HomographyIterations);
+phi = findHomography(WorldCoord, TargetCoord, HomographyIterations);
 exphi = double(reshape(phi, [3 3]));
 
 % Find point-wise error - psi
@@ -60,7 +58,7 @@ if InlierCount > maxInlierCount
     maxInlierCount = InlierCount;
     disp(sprintf('Itr: %d InlierCount: %d', i, maxInlierCount));
     
-    if double(maxInlierCount)/NumOfMPs >= 0.5
+    if double(maxInlierCount)/NumOfMPs >= 0.8
         break;
     end
 end
@@ -74,22 +72,15 @@ disp(sprintf('NumOfMPs: %d Inliers: %d', NumOfMPs, maxInlierCount));
 % Use the best set of inliers to find homography
 WorldCoord = W(maxInleirs, :);
 TargetCoord = T(maxInleirs, :);
-phi = findHomographyTest(WorldCoord, TargetCoord, maxInlierCount, HomographyIterations);
+%%
+phi = findHomography(WorldCoord, TargetCoord, HomographyIterations);
 
 exphi = double(reshape(phi, [3 3]));
 t = projective2d(exphi);
 img= imwarp(Img2,t);
 figure; imshow(img);
-% figure; imshow(Img1);
 
-%%
-exphi = double(reshape(phi, [3 3]));
-t = projective2d(inv(exphi));
-img = imwarp(Img1, t);
-figure; imshow(img);
-% figure; imshow(Img1);
-
-%% Append Nemo2
+%% Append Nemo
 figure1 = figure;
 ax1 = axes('Parent',figure1);
 ax2 = axes('Parent',figure1);
@@ -101,21 +92,12 @@ set(ax2,'Visible','off');
 alpha = imresize(alpha, 0.5);
 
 img = Img2;
-RImg2 = imref2d(size(Img2));
-% t = projective2d(exphi);
-% [img, RImg2] = imwarp(Img2, RImg2, t);
 
 RNe = imref2d(size(a));
 t = projective2d(inv(exphi));
 [a RNex] = imwarp(a, RNe, t);
 alpha = imwarp(alpha, RNe, t);
 
-figure; imshow(a, RNex, 'Parent',ax1);
-set(I,'AlphaData',alpha);
-figure; imshow(img, RImg2, 'Parent',ax2);
-
-
-%%
 xa = uint8(zeros([size(img) 3]));
 xa( floor(RNex.YWorldLimits(1)):floor(RNex.YWorldLimits(1)) + size(a, 1) - 1,...
     floor(RNex.XWorldLimits(1)):floor(RNex.XWorldLimits(1)) + size(a, 2) - 1, :)...
@@ -127,15 +109,22 @@ xalpha( floor(RNex.YWorldLimits(1)):floor(RNex.YWorldLimits(1)) + size(a, 1) - 1
     floor(RNex.XWorldLimits(1)):floor(RNex.XWorldLimits(1)) + size(a, 2) - 1)...
     = alpha;
 
-% figure; imshow(img, RImg2);
-% figure; imshow(xa, Rxa);
 I = imshow(xa, 'Parent',ax2);
 set(I,'AlphaData',xalpha);
 imshow(img, 'Parent',ax1);
 
-
-% imwrite(a, './result2.png');
-% imwrite(img, './result1.png');
-
-
 %% 
+
+i2 = imresize(imread('./data/a2.jpg'), 0.5);
+imx = i2;
+radius = 3;
+for i = 1 : size(WorldCoord, 1)
+    pts = round(WorldCoord(i, :));
+    rx = pts(2); cx = pts(1);
+    for r = rx-radius : rx+radius
+        for c = cx-radius : cx+radius
+            imx(r, c, :) = [255 0 0];
+        end
+    end
+end
+figure;imshow(imx);

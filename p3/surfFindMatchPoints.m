@@ -1,22 +1,24 @@
 function [matchedPoints1 matchedPoints2] = surfFindMatchPoints(Img1, Img2)
 % Find Corresponding Points Using SURF Features 
-% Functions used below are from Matlab
+% INPT: Img1, Img2: grayscale image of any size
+% OUPT: matchedPoints1, matchedPoints2: 
+%       Nx2 matrix. [x y] coordinates of matched N FPs corresponding to Img1,Img2
 
-% Find the SURF features.
+% Find the SURF features
 points1 = detectSURFFeatures(Img1);
 points2 = detectSURFFeatures(Img2); 
 
-% Extract the features.
+% Extract the features
 [f1,vpts1] = extractFeatures(Img1,points1);
 [f2,vpts2] = extractFeatures(Img2,points2);
 
-% Retrieve the locations of matched points.
+% Retrieve the locations of matched points
 indexPairs = matchFeatures(f1,f2) ;
 matchedPoints1 = vpts1(indexPairs(:,1));
 matchedPoints2 = vpts2(indexPairs(:,2));
 
-% Remove bad points
-radius = 3;
+% Remove points that are too close (mainly duplicates)
+radius = 1;
 p1BadIndices = zeros(size(matchedPoints1));
 for i = 1 : size(matchedPoints1, 1)
     pts = matchedPoints1.Location(i, :);
@@ -39,6 +41,7 @@ GoodIndices = ~(p1BadIndices | p2BadIndices);
 matchedPoints1 = matchedPoints1(GoodIndices);
 matchedPoints2 = matchedPoints2(GoodIndices);
 
+% Return the coordinate
 matchedPoints1 = matchedPoints1.Location;
 matchedPoints2 = matchedPoints2.Location;
 
