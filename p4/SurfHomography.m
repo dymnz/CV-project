@@ -5,16 +5,15 @@ clear; close all;
 disp('Read images...');
 
 % Target
-Img1 = rgb2gray(imread('./data/i1.jpg'));
-Img1 = imresize(Img1, [NaN 640]);
-
+Img1 = imread('./data/a1.jpg');
+Img1 = imresize(Img1, [NaN 1280]);
 % Photo
-Img2 = rgb2gray(imread('./data/i2.jpg'));
-Img2 = imresize(Img2, [NaN 640]);
+Img2 = imread('./data/a2.jpg');
+Img2 = imresize(Img2, [NaN 1280]);
 
 %% Find matched SURF feature points
 disp('Find SURF matching points...');
-[T, W] = surfFindMatchPoints(Img1, Img2);
+[T, W] = surfFindMatchPoints(histeq(rgb2gray(Img1)), histeq(rgb2gray(Img2)));
 
 NumOfMPs = size(W, 1);
 
@@ -22,18 +21,18 @@ disp(sprintf('Num of MPs: %d', NumOfMPs));
 
 %% RANSAC
 disp('RANSAC...');
-HomographyIterations = 300; % # of maximum iterations for non-linear optimization
+HomographyIterations = 500; % # of maximum iterations for non-linear optimization
 RANSACiteration = min(max(500, NumOfMPs*10), 1000); % # of maximum iterations for RANSAC
-InlierThreshold = 5.0;    % Thershold for projection error in pixels
+InlierThreshold = 1.0;    % Thershold for projection error in pixels
 
 maxInliers = zeros(1,1);    % Store the largest set of inliers
 maxInlierCount = -1;
 
 %% Normalize the coordinates
-MaxValue = max(max(max(W)), max(max(T)));
-W = W./MaxValue;
-T = T./MaxValue;
-InlierThreshold = InlierThreshold/MaxValue;
+% MaxValue = max(max(max(W)), max(max(T)));
+% W = W./MaxValue;
+% T = T./MaxValue;
+% InlierThreshold = InlierThreshold/MaxValue;
 
 for i = 1 : RANSACiteration
 % Randomly pick four points
@@ -78,64 +77,68 @@ end
 disp('Find the final homography...');
 disp(sprintf('NumOfMPs: %d Inliers: %d', NumOfMPs, maxInlierCount));
 
-WorldCoord = W(maxInleirs, :).*MaxValue;
-TargetCoord = T(maxInleirs, :).*MaxValue;
+WorldCoord = W(maxInleirs, :);
+TargetCoord = T(maxInleirs, :);
+% WorldCoord = W(maxInleirs, :).*MaxValue;
+% TargetCoord = T(maxInleirs, :).*MaxValue;
 
-phi = findHomography(WorldCoord, TargetCoord, HomographyIterations);
+phi = findHomography(WorldCoord, TargetCoord, 3000);
 
 % Here it is 
 H = double(reshape(phi, [3 3]));
 
 %% Append the pattern onto the image
-cImg1 = imread('./data/i1.jpg');
-cImg1 = imresize(cImg1, [NaN 640]);
-cImg2 = imread('./data/i2.jpg');
-cImg2 = imresize(cImg2, [NaN 640]);
-RNe = imref2d(size(cImg2));
+RNe = imref2d(size(Img2));
 t = projective2d(H);
-[transformedImg2 RNex] = imwarp(cImg2, RNe, t);
-alpha = imwarp(255*ones(size(Img2)), RNe, t);
+[transformedImg2 RNex] = imwarp(Img2, RNe, t);
+alpha = imwarp(255*ones([size(Img2, 1) size(Img2, 2)]), RNe, t);
 
-% Fix Y-axis 
-% Please fix X-axis
-
+% Fix axis
 if floor(RNex.YWorldLimits(1)) < 0
-
-x2 = uint8(zeros([-floor(RNex.YWorldLimits(1))+size(transformedImg2, 1)...
-    floor(RNex.XWorldLimits(1))+size(transformedImg2, 2) 3]));
-x2( 1:size(transformedImg2, 1),...
-    floor(RNex.XWorldLimits(1)):floor(RNex.XWorldLimits(1)) + size(transformedImg2, 2) - 1, :)...
+    coord1Y = -floor(RNex.YWorldLimits(1));
+    coord2Y = 1;
+    Ylim = max(-floor(RNex.YWorldLimits(1))+size(Img1, 1), ...
+        RNex.ImageSize(1));
+else 
+    coord1Y = 1;
+    coord2Y = floor(RNex.YWorldLimits(1));    
+    Ylim = RNex.ImageSize(1) + floor(RNex.YWorldLimits(1));
+end
+if floor(RNex.XWorldLimits(1)) < 0
+    coord1X = -floor(RNex.XWorldLimits(1));
+    coord2X = 1;   
+    Xlim = max(-floor(RNex.XWorldLimits(1))+size(Img1, 2), ...
+        RNex.ImageSize(2));    
+else 
+	coord1X = 1;
+    coord2X = floor(RNex.XWorldLimits(1));   
+    Xlim = RNex.ImageSize(2) +  floor(RNex.XWorldLimits(1));  
+end
+    
+% Project images according to the new coordinate    
+x2 = uint8(zeros([Ylim Xlim 3]));
+x2( ...
+	coord2Y:coord2Y + size(transformedImg2, 1) - 1, ...
+    coord2X:coord2X + size(transformedImg2, 2) - 1, :)...
     = transformedImg2;
 
-xAlpha = uint8(zeros([-floor(RNex.YWorldLimits(1))+size(transformedImg2, 1)...
-    floor(RNex.XWorldLimits(1))+size(transformedImg2, 2) 1]));
-xAlpha( 1:size(transformedImg2, 1),...
-    floor(RNex.XWorldLimits(1)):floor(RNex.XWorldLimits(1)) + size(transformedImg2, 2) - 1, :)...
+xAlpha = uint8(zeros([Ylim Xlim 1]));
+xAlpha(...
+	coord2Y:coord2Y + size(transformedImg2, 1) - 1, ...
+    coord2X:coord2X + size(transformedImg2, 2) - 1, :)...
     = alpha;
 
-x1 = uint8(zeros([-floor(RNex.YWorldLimits(1))+size(transformedImg2, 1)...
-    floor(RNex.XWorldLimits(1))+size(transformedImg2, 2) 3]));
-x1( -floor(RNex.YWorldLimits(1)):-floor(RNex.YWorldLimits(1))+size(cImg1, 1) - 1,...
-    1:size(Img1, 2), :)...
-    = cImg1;
+x1 = uint8(zeros([Ylim Xlim 3]));
+x1( ...
+	coord1Y:coord1Y + size(Img1, 1) - 1,...
+    coord1X:coord1X + size(Img1, 2) - 1, :)...
+    = Img1;
+
+% Stack the images
+image = uint8(zeros([Ylim Xlim 3]));
+for i = 1 : 3
+     image(:, :, i) = x1(:, :, i).*(1-xAlpha/255) + x2(:, :, i).*(xAlpha/255);
 end
 
-
-
-% Append the pattern onto the image
-figure1 = figure;
-
-% Two images to put = Two axes to put on
-ax1 = axes('Parent',figure1);
-ax2 = axes('Parent',figure1);
-set(ax1,'Visible','off');
-set(ax2,'Visible','off');
-
-imshow(x1, 'Parent',ax1);
-
-% Draw the pattern and let it have a transparent background
-I = imshow(x2, 'Parent',ax2);
-set(I,'AlphaData',xAlpha);
-
-
-
+figure; imshow(image);
+imwrite(image, 'result.jpg');

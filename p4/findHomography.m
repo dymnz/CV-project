@@ -65,8 +65,7 @@ if numel(find(isinf(A))) ~= 0 || numel(find(isnan(A)))
 end
 
 % Find gradient
-% dPhi = pinv(A)*b;
-dPhi = inv(A)*b;
+dPhi = pinv(A)*b;
 phi = phi + dPhi;
 
 % Stop when the projection error is 0
