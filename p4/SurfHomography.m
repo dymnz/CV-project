@@ -3,17 +3,18 @@ clear; close all;
 
 %% Read and resize the images
 disp('Read images...');
-
+HSVEnable = false;
 % Target
-Img1 = imread('./data/a1.jpg');
-Img1 = imresize(Img1, [NaN 1280]);
+ImgT = imread('./data/a1.jpg');
+ImgT = Preprocessing(ImgT, HSVEnable);
 % Photo
-Img2 = imread('./data/a2.jpg');
-Img2 = imresize(Img2, [NaN 1280]);
+normImgW = imread('./data/a2.jpg');
+normImgW = Preprocessing(normImgW, HSVEnable);
+
 
 %% Find matched SURF feature points
 disp('Find SURF matching points...');
-[T, W] = surfFindMatchPoints(histeq(rgb2gray(Img1)), histeq(rgb2gray(Img2)));
+[T, W] = surfFindMatchPoints(histeq(rgb2gray(ImgT)), histeq(rgb2gray(normImgW)));
 
 NumOfMPs = size(W, 1);
 
@@ -21,18 +22,12 @@ disp(sprintf('Num of MPs: %d', NumOfMPs));
 
 %% RANSAC
 disp('RANSAC...');
-HomographyIterations = 500; % # of maximum iterations for non-linear optimization
+HomographyIterations = 300; % # of maximum iterations for non-linear optimization
 RANSACiteration = min(max(500, NumOfMPs*10), 1000); % # of maximum iterations for RANSAC
 InlierThreshold = 1.0;    % Thershold for projection error in pixels
 
 maxInliers = zeros(1,1);    % Store the largest set of inliers
 maxInlierCount = -1;
-
-%% Normalize the coordinates
-% MaxValue = max(max(max(W)), max(max(T)));
-% W = W./MaxValue;
-% T = T./MaxValue;
-% InlierThreshold = InlierThreshold/MaxValue;
 
 for i = 1 : RANSACiteration
 % Randomly pick four points
@@ -62,7 +57,7 @@ InlierCount = numel(Inliers);
 
 % If a better set of inliers is found, store it
 if InlierCount > maxInlierCount
-	maxInleirs = Inliers;
+	maxInliers = Inliers;
     maxInlierCount = InlierCount;
     disp(sprintf('Itr: %d InlierCount: %d', i, maxInlierCount));
     
@@ -73,31 +68,34 @@ end
 
 end
 
+%% Intensity normalization
+WorldCoordInliers = W(maxInliers, :);
+TargetCoordInliers = T(maxInliers, :);
+normImgW = IntensityNormalization(ImgT, normImgW, TargetCoordInliers, WorldCoordInliers);
+
 %% Use the best set of inliers to find homography
 disp('Find the final homography...');
 disp(sprintf('NumOfMPs: %d Inliers: %d', NumOfMPs, maxInlierCount));
 
-WorldCoord = W(maxInleirs, :);
-TargetCoord = T(maxInleirs, :);
-% WorldCoord = W(maxInleirs, :).*MaxValue;
-% TargetCoord = T(maxInleirs, :).*MaxValue;
+WorldCoordInliers = W(maxInliers, :);
+TargetCoordInliers = T(maxInliers, :);
 
-phi = findHomography(WorldCoord, TargetCoord, 3000);
+phi = findHomography(WorldCoordInliers, TargetCoordInliers, 3000);
 
 % Here it is 
 H = double(reshape(phi, [3 3]));
 
 %% Append the pattern onto the image
-RNe = imref2d(size(Img2));
+RNe = imref2d(size(normImgW));
 t = projective2d(H);
-[transformedImg2 RNex] = imwarp(Img2, RNe, t);
-alpha = imwarp(255*ones([size(Img2, 1) size(Img2, 2)]), RNe, t);
+[transformedImgW RNex] = imwarp(normImgW, RNe, t);
+alpha = imwarp(255*ones([size(normImgW, 1) size(normImgW, 2)]), RNe, t);
 
 % Fix axis
 if floor(RNex.YWorldLimits(1)) < 0
     coord1Y = -floor(RNex.YWorldLimits(1));
     coord2Y = 1;
-    Ylim = max(-floor(RNex.YWorldLimits(1))+size(Img1, 1), ...
+    Ylim = max(-floor(RNex.YWorldLimits(1))+size(ImgT, 1), ...
         RNex.ImageSize(1));
 else 
     coord1Y = 1;
@@ -107,7 +105,7 @@ end
 if floor(RNex.XWorldLimits(1)) < 0
     coord1X = -floor(RNex.XWorldLimits(1));
     coord2X = 1;   
-    Xlim = max(-floor(RNex.XWorldLimits(1))+size(Img1, 2), ...
+    Xlim = max(-floor(RNex.XWorldLimits(1))+size(ImgT, 2), ...
         RNex.ImageSize(2));    
 else 
 	coord1X = 1;
@@ -118,21 +116,21 @@ end
 % Project images according to the new coordinate    
 x2 = uint8(zeros([Ylim Xlim 3]));
 x2( ...
-	coord2Y:coord2Y + size(transformedImg2, 1) - 1, ...
-    coord2X:coord2X + size(transformedImg2, 2) - 1, :)...
-    = transformedImg2;
+	coord2Y:coord2Y + size(transformedImgW, 1) - 1, ...
+    coord2X:coord2X + size(transformedImgW, 2) - 1, :)...
+    = transformedImgW;
 
 xAlpha = uint8(zeros([Ylim Xlim 1]));
 xAlpha(...
-	coord2Y:coord2Y + size(transformedImg2, 1) - 1, ...
-    coord2X:coord2X + size(transformedImg2, 2) - 1, :)...
+	coord2Y:coord2Y + size(transformedImgW, 1) - 1, ...
+    coord2X:coord2X + size(transformedImgW, 2) - 1, :)...
     = alpha;
 
 x1 = uint8(zeros([Ylim Xlim 3]));
 x1( ...
-	coord1Y:coord1Y + size(Img1, 1) - 1,...
-    coord1X:coord1X + size(Img1, 2) - 1, :)...
-    = Img1;
+	coord1Y:coord1Y + size(ImgT, 1) - 1,...
+    coord1X:coord1X + size(ImgT, 2) - 1, :)...
+    = ImgT;
 
 % Stack the images
 image = uint8(zeros([Ylim Xlim 3]));

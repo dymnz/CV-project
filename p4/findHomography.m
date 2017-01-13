@@ -51,7 +51,6 @@ for i = 1 : NumOfMPs
     J((i-1)*2+1:i*2, :) = j./(w*exphi(7:9));
 end
 
-% Find A and b
 A = zeros(8, 8);
 b = zeros(8, 1);
 for i = 1 : NumOfMPs
