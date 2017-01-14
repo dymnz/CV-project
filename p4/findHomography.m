@@ -6,6 +6,7 @@ function phi = findHomography(W, T, NumOfIterations)
 % OUPT: phi: 1x9 vector. The vectorized homography parameters
 
 NumOfMPs = size(W, 1);
+Lambda = 0.001;
 
 % Append 1 for homogenous coordinate
 W = [W ones(NumOfMPs, 1)];
@@ -66,6 +67,11 @@ end
 % Find gradient
 dPhi = pinv(A)*b;
 phi = phi + dPhi;
+
+if mean(dPhi) < 1e-6
+    phi = [phi(1:8);1];
+    return;
+end
 
 % Stop when the projection error is 0
 AvgError = (sum(abs(psi(:, 1))) + sum(abs(psi(:, 2))))/2/size(psi, 1);

@@ -5,16 +5,16 @@ clear; close all;
 disp('Read images...');
 HSVEnable = false;
 % Target
-ImgT = imread('./data/a1.jpg');
+ImgT = imread('./data/a3.jpg');
 ImgT = Preprocessing(ImgT, HSVEnable);
 % Photo
-normImgW = imread('./data/a2.jpg');
-normImgW = Preprocessing(normImgW, HSVEnable);
+ImgW = imread('./data/a4.jpg');
+ImgW = Preprocessing(ImgW, HSVEnable);
 
 
 %% Find matched SURF feature points
 disp('Find SURF matching points...');
-[T, W] = surfFindMatchPoints(histeq(rgb2gray(ImgT)), histeq(rgb2gray(normImgW)));
+[T, W] = surfFindMatchPoints(histeq(rgb2gray(ImgT)), histeq(rgb2gray(ImgW)));
 
 NumOfMPs = size(W, 1);
 
@@ -67,11 +67,10 @@ if InlierCount > maxInlierCount
 end
 
 end
-
 %% Intensity normalization
 WorldCoordInliers = W(maxInliers, :);
 TargetCoordInliers = T(maxInliers, :);
-normImgW = IntensityNormalization(ImgT, normImgW, TargetCoordInliers, WorldCoordInliers);
+normImgW = IntensityNormalizationMulti(ImgT, ImgW, TargetCoordInliers, WorldCoordInliers);
 
 %% Use the best set of inliers to find homography
 disp('Find the final homography...');
@@ -93,23 +92,23 @@ alpha = imwarp(255*ones([size(normImgW, 1) size(normImgW, 2)]), RNe, t);
 
 % Fix axis
 if floor(RNex.YWorldLimits(1)) < 0
-    coord1Y = -floor(RNex.YWorldLimits(1));
+    coord1Y = max(1, -floor(RNex.YWorldLimits(1)));
     coord2Y = 1;
     Ylim = max(-floor(RNex.YWorldLimits(1))+size(ImgT, 1), ...
         RNex.ImageSize(1));
 else 
     coord1Y = 1;
-    coord2Y = floor(RNex.YWorldLimits(1));    
+    coord2Y = max(1, floor(RNex.YWorldLimits(1)));    
     Ylim = RNex.ImageSize(1) + floor(RNex.YWorldLimits(1));
 end
 if floor(RNex.XWorldLimits(1)) < 0
-    coord1X = -floor(RNex.XWorldLimits(1));
+    coord1X = max(1, -floor(RNex.XWorldLimits(1)));
     coord2X = 1;   
     Xlim = max(-floor(RNex.XWorldLimits(1))+size(ImgT, 2), ...
         RNex.ImageSize(2));    
 else 
 	coord1X = 1;
-    coord2X = floor(RNex.XWorldLimits(1));   
+    coord2X = max(1, floor(RNex.XWorldLimits(1)));   
     Xlim = RNex.ImageSize(2) +  floor(RNex.XWorldLimits(1));  
 end
     

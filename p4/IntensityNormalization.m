@@ -31,14 +31,15 @@ disp(sprintf('Original Erms: %.3f', Erms));
 Erms = sqrt( sum((Pred-TargetInt).^2)/size(TargetInt, 1) );
 disp(sprintf('Order:%d Erms: %.3f', PolyRegressionOrder, Erms));
 
-% close all;
-% figure;
-% scatter([1:MaxInlierCount], Intensity(:, 1));
-% hold on
-% scatter([1:MaxInlierCount], Intensity(:, 2));
-% hold on
-% scatter([1:MaxInlierCount], Pred);
-
+close all;
+figure;
+scatter([1:MaxInlierCount], Intensity(:, 1));
+hold on
+scatter([1:MaxInlierCount], Intensity(:, 2));
+hold on
+scatter([1:MaxInlierCount], Pred);
+legend('Target', 'Current', 'Inferred');
+title('Intensity');
 
 IntTable = unique(HSVImgW(:, :, 3));
 IntTarget = PolynomialInference(IntTable, Param, 1, PolyRegressionOrder);
