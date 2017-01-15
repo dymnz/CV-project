@@ -1,15 +1,15 @@
-%% Find the homography between two images with SURF and RANSAC
+%% Image stitching with brightness matching
 clear; close all;
 
 %% Read and resize the images
 disp('Read images...');
-HSVEnable = false;
+EnableHEQ = false;
 % Target
 ImgT = imread('./data/a3.jpg');
-ImgT = Preprocessing(ImgT, HSVEnable);
+ImgT = Preprocessing(ImgT, EnableHEQ);
 % Photo
 ImgW = imread('./data/a4.jpg');
-ImgW = Preprocessing(ImgW, HSVEnable);
+ImgW = Preprocessing(ImgW, EnableHEQ);
 
 
 %% Find matched SURF feature points
@@ -67,10 +67,13 @@ if InlierCount > maxInlierCount
 end
 
 end
-%% Intensity normalization
+
+%% Intensity matching
 WorldCoordInliers = W(maxInliers, :);
 TargetCoordInliers = T(maxInliers, :);
-normImgW = IntensityNormalizationMulti(ImgT, ImgW, TargetCoordInliers, WorldCoordInliers);
+
+% Match the intensity of two images using matched points
+normImgW = IntensityMatchingMulti(ImgT, ImgW, TargetCoordInliers, WorldCoordInliers);
 
 %% Use the best set of inliers to find homography
 disp('Find the final homography...');
@@ -90,7 +93,7 @@ t = projective2d(H);
 [transformedImgW RNex] = imwarp(normImgW, RNe, t);
 alpha = imwarp(255*ones([size(normImgW, 1) size(normImgW, 2)]), RNe, t);
 
-% Fix axis
+% Fix the pivot of the stitched images for the four configurations
 if floor(RNex.YWorldLimits(1)) < 0
     coord1Y = max(1, -floor(RNex.YWorldLimits(1)));
     coord2Y = 1;

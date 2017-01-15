@@ -1,4 +1,4 @@
-function normImgW = IntensityNormalizationMulti(ImgT, ImgW, TargetCoordInliers, WorldCoordInliers)
+function normImgW = IntensityMatchingMultiTest(ImgT, ImgW, TargetCoordInliers, WorldCoordInliers)
 
 MaxInlierCount = size(WorldCoordInliers, 1);
 PolyRegressionOrder = 3;

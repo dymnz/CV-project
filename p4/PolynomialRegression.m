@@ -1,5 +1,10 @@
 function W = PolynomialRegression(X, T, Dimension, Order)
-
+% Learn the polynomial parameter W using data X and target T
+% INPT: X: NxD matrix. N samples with D dimension.
+%       T: Nx1 vector. The traget value of N samples
+%       Dimension: scalar. Dimension of the sample.
+%       Order: scalar. Order of the polynomial.
+% OUPT: W: Kx1 vector. The parameters of the polynomial y = W'x.
 
 %% Constants and data reading %%
 cTrainSetSize = size(X, 1);
@@ -22,7 +27,6 @@ Y = zeros(length(W), 1);
 A = zeros(length(W), length(W));
 
 % Build the Weight from partial derivative
-% If I had more time, I would have written a shorter code
 Weight = ones(cTrainSetSize, 1);
 for i = 1 : cDimension
     Weight = cat(2, Weight, TrainX(:, i));
@@ -51,7 +55,6 @@ for i = 1 : length(W)
 end
 
 %% Find W using W = pinv(A)Y
-% W = A\Y;
 W = pinv(A)*Y;
 
 end

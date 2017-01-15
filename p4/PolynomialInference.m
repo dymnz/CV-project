@@ -1,11 +1,18 @@
 function Predictions = PolynomialInference(X, W, Dimension, Order)
+% Calculate the inferred value of input X using polynomial paramter W
+% INPT: X: NxD matrix. N samples with D dimension.
+%       W: Kx1 vector. The parameters of the polynomial y = W'x.
+%       Dimension: scalar. Dimension of the sample.
+%       Order: scalar. Order of the polynomial.
+% OUPT: Predictions: Nx1 vector. Inferred value of X.
 
+%% Constants and data reading %%
 cTestSetSize = size(X, 1);
 cDimension = Dimension;
 cOrder = Order;
 TestX = X;
 
-% Construct X for test set
+%% Construct X for test set
 X = ones(cTestSetSize, 1);
 for i = 1 : cDimension
     X = cat(2, X, TestX(:, i));
@@ -27,5 +34,5 @@ for i = 1 : cDimension
 end
 end
 
-% Predict
+%% Predict
 Predictions = X*W;
